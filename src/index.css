@@ -10,6 +10,12 @@
 @import url(./blocks/header/__button/header__button.css);
 @import url(./blocks/header/__button/_exit/header__button_exit.css);
 
+@import url(./blocks/authentication/authentication.css);
+@import url(./blocks/authentication/__title/authentication__title.css);
+@import url(./blocks/authentication/-form/authentication-form.css);
+@import url(./blocks/authentication/-form/__input/authentication-form__input.css);
+@import url(./blocks/authentication/-form/__save-button/authentication__form__save-button.css);
+
 @import url(./blocks/profile/profile.css);
 @import url(./blocks/profile/__img/profile___img.css);
 @import url(./blocks/profile/__img-container/profile__img-container.css);
