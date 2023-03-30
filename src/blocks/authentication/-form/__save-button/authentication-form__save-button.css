@@ -1,8 +1,7 @@
-.authentication__form__save-button {
-    margin: 0;
-    padding: 14px 151px 14px 151px;
-
-    margin-top: 216px;
+.authentication-form__save-button {
+    margin: 216px 0 15px 0;
+    padding: 14px 0;
+    /* padding: 14px 151px 14px 151px; */
 
     font-family: 'Inter';
     font-style: normal;
@@ -11,6 +10,8 @@
     line-height: 22px;
 
     color: #000000;
+
+    width: 358px;
 
     background: #FFFFFF;
     border-radius: 2px;

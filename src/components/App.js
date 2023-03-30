@@ -12,6 +12,7 @@ import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import DeleteCardPopup from './DeleteCardPopup';
+import Register from './Register';
 
 
 
@@ -175,7 +176,8 @@ function App() {
             <Route path="/" element={!loggedIn && <Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
           </Routes>
-          <Login />
+          {/* <Login /> */}
+          <Register />
           {/* <Main
             onEditProfile={handleEditProfileClick}
             onAddPlace={handleAddPlaceClick}
