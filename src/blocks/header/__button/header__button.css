@@ -16,3 +16,7 @@
     margin-bottom: 46px;
     text-decoration: none;
 }
+
+.header__button:hover {
+    opacity: .8;
+}
