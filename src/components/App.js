@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import '../index.css'
 import Header from "./Header.js";
 import Footer from "./Footer.js";
@@ -13,8 +13,9 @@ import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import DeleteCardPopup from './DeleteCardPopup';
 import Register from './Register';
-
-
+import ProtectedRouteElement from "./ProtectedRoute";
+import * as auth from '../utils/Auth'
+import InfoTooltip from './InfoTooltip';
 
 function App() {
 
@@ -27,9 +28,14 @@ function App() {
   const [currentUser, setCurrentUser] = useState({})
   const [cards, setCards] = useState([])
   const [isStatus, setIsStatus] = useState(false)
+  const [userEmail, setUserEmail] = useState("")
 
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [isLoggedIn, setLoggedIn] = useState()
+  const navigate = useNavigate();
 
+  const [isInfoTooltip, setIsInfoTooltip] = useState(false)
+  const [isError, setIsError] = useState(false)
+  
   useEffect(() => {
     Api
       .getUserInfo()
@@ -46,6 +52,28 @@ function App() {
         console.log(err)
       )
   }, [])
+
+  useEffect(() => {
+    handleTokenCheck();
+  }, [])
+
+  const handleTokenCheck = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      auth.checkToken(token).then((res) => {
+        if (res) {
+          setLoggedIn(true);
+          setUserEmail(res.data.email)
+          navigate("/", { replace: true })
+        }
+      });
+    }
+  }
+
+  const handleLogin = (email) => {
+    setLoggedIn(true)
+    setUserEmail(email)
+  }
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true)
@@ -75,6 +103,8 @@ function App() {
     setIsAddPlacePopupOpen(false)
     setCardPopupOpen(false)
     setIsDeleteCardPopupOpen(false)
+    setIsInfoTooltip(false)
+    setIsError(false)
   }
 
   function handleCardLike(card) {
@@ -166,28 +196,61 @@ function App() {
       })
   }
 
+  function signOut(){
+      localStorage.removeItem('token');
+      
+      navigate('/sign-in');
+  }
+
   return (
-    <BrowserRouter>
-      <div className="root">
-        <div className="page">
-          {/* <CurrentUserContext.Provider value={currentUser}> */}
-          {/* <Header /> */}
+    <div className="root">
+      <div className="page">
+        <CurrentUserContext.Provider value={currentUser}>
           <Routes>
-            <Route path="/" element={!loggedIn && <Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/sign-up" element={
+              <>
+                <Header
+                  buttonText="Войти"
+                  linkTo="/sign-in" />
+                <Register isOpen={setIsInfoTooltip} status={setIsError}/>
+              </>
+            } />
+            <Route path="/sign-in" element={
+              <>
+                <Header
+                  buttonText="Регистрация"
+                  linkTo="/sign-up" />
+                <Login handleLogin={handleLogin}/>
+              </>
+            } />
+            <Route path="/" element={
+              <>
+                <Header
+                  buttonText="Выйти"
+                  linkTo="/sign-in"
+                  email={userEmail}
+                  onClick = {signOut}
+                />
+                <ProtectedRouteElement element={Main} loggedIn={isLoggedIn}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onEditAvatar={handleEditAvatarClick}
+                  onDeleteCard={handleDeleteCardClick}
+                  onCardClick={handleCardClick}
+                  onCardLike={handleCardLike}
+                  cards={cards}
+                />
+                <Footer />
+              </>
+            } />
           </Routes>
-          {/* <Login /> */}
-          <Register />
-          {/* <Main
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onEditAvatar={handleEditAvatarClick}
-            onDeleteCard={handleDeleteCardClick}
-            onCardClick={handleCardClick}
-            onCardLike={handleCardLike}
-            cards={cards}
+
+          <InfoTooltip 
+            isOpen={isInfoTooltip}
+            onClose={closeAllPopups}
+            status = {isError}
           />
-          <Footer />
+
           <EditProfilePopup
             isOpened={isEditProfilePopupOpen}
             onClose={closeAllPopups}
@@ -198,7 +261,7 @@ function App() {
             card={selectedCard}
             isOpened={isDeleteCardPopupOpen}
             onClose={closeAllPopups}
-            onDelCard ={handleCardDelete}
+            onDelCard={handleCardDelete}
             status={isStatus}
           />
           <AddPlacePopup
@@ -220,10 +283,9 @@ function App() {
             isOpened={isCardPopupOpen}
             onClose={closeAllPopups}
           />
-        </CurrentUserContext.Provider> */}
-        </div>
+        </CurrentUserContext.Provider>
       </div>
-    </BrowserRouter>
+    </div>
   );
 }
 

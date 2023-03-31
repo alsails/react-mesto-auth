@@ -1,23 +1,47 @@
-import React from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../index.css'
-import Header from "./Header";
+import AuthenticationForm from "./AuthenticationForm";
+import * as auth from '../utils/Auth'
 
-function Login() {
+function Login({ handleLogin }) {
+    const [formValue, setFormValue] = useState({
+        email: '',
+        password: ''
+    })
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormValue({
+            ...formValue,
+            [name]: value
+        });
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!formValue.email || !formValue.password) {
+            return;
+        }
+        auth.signin(formValue.email, formValue.password)
+            .then(() => {
+                handleLogin(formValue.email);
+                navigate('/');
+            })
+            .catch(err => console.log(err));
+    }
+
     return (
-        <>
-        <Header 
-        buttonText = "Регистрация"/>
-        <div className="authentication">
-            <h2 className="authentication__title">Вход</h2>
-            <form className="authentication-form">
-                <input className="authentication-form__input" id="email-input" type="email" name="email" placeholder="Email"
-                required/>
-                <input className="authentication-form__input"  id="password-input" type="password" name="password" placeholder="Пароль"
-                required/>
-                <button className="authentication-form__save-button">Войти</button>
-            </form>
-        </div>
-        </>
+        <AuthenticationForm
+            title="Вход"
+            buttonText="Войти"
+            loginLink={false}
+            formValue={formValue}
+            handleChange={handleChange}
+            onSubmit={handleSubmit}
+        />
     );
 }
 

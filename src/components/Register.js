@@ -1,28 +1,52 @@
-import React from "react";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthenticationForm from "./AuthenticationForm";
+import * as auth from '../utils/Auth'
 import '../index.css'
-import Header from "./Header";
 
-import { Link } from "react-router-dom";
 
-function Register() {
+
+function Register({isOpen, status}) {
+    const [formValue, setFormValue] = useState({
+        email: '',
+        password: '',
+    })
+    const navigate = useNavigate();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setFormValue({
+            ...formValue,
+            [name]: value
+        });
+    }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        auth.signup(formValue)
+            .then((res) => {
+                isOpen(true)
+                status(false)
+                navigate('/sign-in', { replace: true });
+            }
+            )
+            .catch((err) => {
+                isOpen(true)
+                status(true)
+                console.log(err)
+            })
+    }
+
     return (
-        <>
-        <Header 
-        buttonText = "Войти"/>
-        <div className="authentication">
-            <h2 className="authentication__title">Регистрация</h2>
-            <form className="authentication-form">
-                <input className="authentication-form__input" id="email-input" type="email" name="email" placeholder="Email"
-                required/>
-                <input className="authentication-form__input"  id="password-input" type="password" name="password" placeholder="Пароль"
-                required/>
-                <button className="authentication-form__save-button">Зарегистрироваться</button>
-                <Link to="/sign-in" className="authentication-form__login-link">
-                    Уже зарегистрированы? Войти
-                </Link>
-            </form>
-        </div>
-        </>
+        <AuthenticationForm
+            title="Регистрация"
+            buttonText="Зарегистрироваться"
+            loginLink={true}
+            formValue={formValue}
+            handleChange={handleChange}
+            onSubmit={handleSubmit}
+        />
     );
 }
 

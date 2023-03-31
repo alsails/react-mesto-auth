@@ -63,3 +63,5 @@
 @import url(./blocks/popup/__description/popup__description.css);
 @import url(./blocks/popup/__del/popup__del.css);
 @import url(./blocks/popup/__avatar/popup__avatar.css);
+@import url(./blocks/popup/__img-info/popup__img-info.css);
+@import url(./blocks/popup/__title-info/popup__title-info.css);
