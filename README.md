@@ -19,7 +19,7 @@
 * BEM Nested
 * Git
 
-Ссылка на проект: https://alsails.github.io/mesto-react
+Ссылка на проект: https://alsails.github.io/react-mesto-auth
 
 
 ------
