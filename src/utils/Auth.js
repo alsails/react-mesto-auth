@@ -1,14 +1,18 @@
-export const BASE_URL = 'https://auth.nomoreparties.co';
+const BASE_URL = 'https://auth.nomoreparties.co';
 
 function checkResponse(res) {
     if (res.ok) {
-      return res.json();
+        return res.json();
     }
     return Promise.reject(`Ошибка: ${res.status}`);
-  }
+}
+
+function request(endpoint, options) {
+    return fetch(`${BASE_URL}/${endpoint}`, options).then(checkResponse)
+}
 
 export const signup = ({ password, email }) => {
-    return fetch(`${BASE_URL}/signup`, {
+    return request(`signup`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -16,13 +20,10 @@ export const signup = ({ password, email }) => {
         },
         body: JSON.stringify({ password, email })
     })
-        .then((res) => {
-            checkResponse(res);
-        })
 };
 
 export const signin = (email, password) => {
-    return fetch(`${BASE_URL}/signin`, {
+    return request(`signin`, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -30,7 +31,6 @@ export const signin = (email, password) => {
         },
         body: JSON.stringify({ email, password })
     })
-        .then(res => checkResponse(res))
         .then((data) => {
             if (data.token) {
                 localStorage.setItem('token', data.token);
@@ -39,7 +39,7 @@ export const signin = (email, password) => {
 };
 
 export const checkToken = (token) => {
-    return fetch(`${BASE_URL}/users/me`, {
+    return request(`users/me`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -47,6 +47,5 @@ export const checkToken = (token) => {
             'Authorization': `Bearer ${token}`,
         }
     })
-        .then(res => checkResponse(res))
         .then(data => { return data })
 }

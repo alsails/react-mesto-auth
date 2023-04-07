@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 
 function AuthenticationForm({title, buttonText, loginLink, formValue, handleChange, onSubmit}) {
     return (
-        <>
         <div className="authentication">
             <h2 className="authentication__title">{title}</h2>
             <form action="submit" className="authentication-form" onSubmit={onSubmit}>
@@ -19,7 +18,6 @@ function AuthenticationForm({title, buttonText, loginLink, formValue, handleChan
                 </Link>}
             </form>
         </div>
-        </>
     );
 }
 

@@ -14,35 +14,36 @@ class Api extends React.Component {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
+  _request(endpoint, options) {
+    return fetch(`${this.baseUrl}/${endpoint}`, options).then(this._checkResponse)
+  }
+
   getInitialCards() {
-    return fetch(`${this.baseUrl}/cards`, {
+    return this._request(`cards`, {
       method: 'GET',
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   getUserInfo() {
-    return fetch(`${this.baseUrl}/users/me`, {
+    return this._request(`users/me`, {
       method: 'GET',
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   updateUserAvatar(data) {
-    return fetch(`${this.baseUrl}/users/me/avatar`, {
+    return this._request(`users/me/avatar`, {
       method: 'PATCH',
       body: JSON.stringify({
         avatar: data.avatar
       }),
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   updateUserInfo(data) {
-    return fetch(`${this.baseUrl}/users/me`, {
+    return this._request(`users/me`, {
       method: 'PATCH',
       body: JSON.stringify({
         name: data.name,
@@ -50,11 +51,10 @@ class Api extends React.Component {
       }),
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   addNewCard(data) {
-    return fetch(`${this.baseUrl}/cards`, {
+    return this._request(`cards`, {
       method: 'POST',
       body: JSON.stringify({
         name: data.name,
@@ -62,31 +62,27 @@ class Api extends React.Component {
       }),
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   delCard(data) {
-    return fetch(`${this.baseUrl}/cards/${data}`, {
+    return this._request(`cards/${data}`, {
       method: 'DELETE',
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   delLike(data) {
-    return fetch(`${this.baseUrl}/cards/${data}/likes`, {
+    return this._request(`cards/${data}/likes`, {
       method: 'DELETE',
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 
   putLike(data) {
-    return fetch(`${this.baseUrl}/cards/${data}/likes`, {
+    return this._request(`cards/${data}/likes`, {
       method: 'PUT',
       headers: this.headers
     })
-    .then(this._checkResponse)
   }
 }
 

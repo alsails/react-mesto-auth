@@ -27,35 +27,33 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({})
   const [currentUser, setCurrentUser] = useState({})
   const [cards, setCards] = useState([])
-  const [isStatus, setIsStatus] = useState(false)
+  const [isStatus, setIsStatus] = useState(true)
+  const [isRegisterStatus, setIsRegisterStatus] = useState(true)
   const [userEmail, setUserEmail] = useState("")
 
-  const [isLoggedIn, setLoggedIn] = useState()
+  const [isLoggedIn, setLoggedIn] = useState(false)
+
   const navigate = useNavigate();
 
   const [isInfoTooltip, setIsInfoTooltip] = useState(false)
-  const [isError, setIsError] = useState(false)
-  
-  useEffect(() => {
-    Api
-      .getUserInfo()
-      .then(res => {
-        setCurrentUser(res)
-      })
-      .then(
-        Api
-          .getInitialCards()
-          .then(res => {
-            setCards(res)
-          }))
-      .catch(err =>
-        console.log(err)
-      )
-  }, [])
+
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || isCardPopupOpen
+
+  if (isLoggedIn) {
+  Promise.all([Api.getUserInfo(), Api.getInitialCards()])
+    .then(([userData, cards]) => {
+      setCurrentUser(userData)
+      setCards(cards)
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  }
 
   useEffect(() => {
     handleTokenCheck();
   }, [])
+
 
   const handleTokenCheck = () => {
     const token = localStorage.getItem('token');
@@ -66,13 +64,36 @@ function App() {
           setUserEmail(res.data.email)
           navigate("/", { replace: true })
         }
-      });
+      })
+        .catch(err => {
+          console.log(err);
+        });
     }
   }
 
-  const handleLogin = (email) => {
-    setLoggedIn(true)
-    setUserEmail(email)
+  function handleLogin(email, password) {
+    auth.signin(email, password)
+    .then(() => {
+        setUserEmail(email)
+        setLoggedIn(true)
+        navigate('/')
+    })
+    .catch(err => console.log(err));
+  }
+
+  function handleRegister(formValue) {
+    auth.signup(formValue)
+    .then((res) => {
+        setIsRegisterStatus(true)
+        navigate('/sign-in', { replace: true });
+    }
+    )
+    .catch((err) => {
+        setIsRegisterStatus(false)
+    })
+    .finally(() => {
+        setIsInfoTooltip(true)
+    })
   }
 
   function handleEditAvatarClick() {
@@ -104,8 +125,21 @@ function App() {
     setCardPopupOpen(false)
     setIsDeleteCardPopupOpen(false)
     setIsInfoTooltip(false)
-    setIsError(false)
   }
+
+   useEffect(() => {
+    function closeByEscape(evt) {
+      if (evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    if (isOpen) { // навешиваем только при открытии
+      document.addEventListener('keydown', closeByEscape);
+      return () => {
+        document.removeEventListener('keydown', closeByEscape);
+      }
+    }
+  }, [isOpen])
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id)
@@ -196,10 +230,10 @@ function App() {
       })
   }
 
-  function signOut(){
-      localStorage.removeItem('token');
-      
-      navigate('/sign-in');
+  function signOut() {
+    localStorage.removeItem('token');
+
+    navigate('/sign-in');
   }
 
   return (
@@ -212,7 +246,7 @@ function App() {
                 <Header
                   buttonText="Войти"
                   linkTo="/sign-in" />
-                <Register isOpen={setIsInfoTooltip} status={setIsError}/>
+                <Register handleRegister={handleRegister} />
               </>
             } />
             <Route path="/sign-in" element={
@@ -220,7 +254,7 @@ function App() {
                 <Header
                   buttonText="Регистрация"
                   linkTo="/sign-up" />
-                <Login handleLogin={handleLogin}/>
+                <Login handleLogin={handleLogin} />
               </>
             } />
             <Route path="/" element={
@@ -229,7 +263,7 @@ function App() {
                   buttonText="Выйти"
                   linkTo="/sign-in"
                   email={userEmail}
-                  onClick = {signOut}
+                  onClick={signOut}
                 />
                 <ProtectedRouteElement element={Main} loggedIn={isLoggedIn}
                   onEditProfile={handleEditProfileClick}
@@ -245,10 +279,10 @@ function App() {
             } />
           </Routes>
 
-          <InfoTooltip 
+          <InfoTooltip
             isOpen={isInfoTooltip}
             onClose={closeAllPopups}
-            status = {isError}
+            status={isRegisterStatus}
           />
 
           <EditProfilePopup

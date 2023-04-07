@@ -1,17 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AuthenticationForm from "./AuthenticationForm";
-import * as auth from '../utils/Auth'
 import '../index.css'
 
 
 
-function Register({isOpen, status}) {
+function Register({handleRegister}) {
     const [formValue, setFormValue] = useState({
         email: '',
         password: '',
     })
-    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,18 +21,7 @@ function Register({isOpen, status}) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        auth.signup(formValue)
-            .then((res) => {
-                isOpen(true)
-                status(false)
-                navigate('/sign-in', { replace: true });
-            }
-            )
-            .catch((err) => {
-                isOpen(true)
-                status(true)
-                console.log(err)
-            })
+        handleRegister(formValue)
     }
 
     return (
