@@ -1,27 +1,16 @@
-import { useState } from 'react';
+import React from 'react';
 import AuthenticationForm from "./AuthenticationForm";
+import { useForm } from "../hooks/useForm"
 import '../index.css'
 
 
 
 function Register({handleRegister}) {
-    const [formValue, setFormValue] = useState({
-        email: '',
-        password: '',
-    })
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        setFormValue({
-            ...formValue,
-            [name]: value
-        });
-    }
+    const { values, handleChange } = useForm({});
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleRegister(formValue)
+        handleRegister(values)
     }
 
     return (
@@ -29,7 +18,7 @@ function Register({handleRegister}) {
             title="Регистрация"
             buttonText="Зарегистрироваться"
             loginLink={true}
-            formValue={formValue}
+            values = {values}
             handleChange={handleChange}
             onSubmit={handleSubmit}
         />

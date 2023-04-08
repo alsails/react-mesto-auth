@@ -1,28 +1,18 @@
-import { useState } from 'react';
+import React from 'react';
 import AuthenticationForm from "./AuthenticationForm";
+import { useForm } from "../hooks/useForm"
 import '../index.css'
 
 function Login({ handleLogin }) {
-    const [formValue, setFormValue] = useState({
-        email: '',
-        password: ''
-    })
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-
-        setFormValue({
-            ...formValue,
-            [name]: value
-        });
-    }
+    const { values, handleChange } = useForm({});
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formValue.email || !formValue.password) {
+        if (!values.email || !values.password) {
             return;
         }
-        handleLogin(formValue.email, formValue.password)
+        handleLogin(values.email, values.password)
     }
 
     return (
@@ -30,7 +20,7 @@ function Login({ handleLogin }) {
             title="Вход"
             buttonText="Войти"
             loginLink={false}
-            formValue={formValue}
+            values = {values}
             handleChange={handleChange}
             onSubmit={handleSubmit}
         />

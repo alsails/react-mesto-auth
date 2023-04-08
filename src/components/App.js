@@ -39,16 +39,19 @@ function App() {
 
   const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || isCardPopupOpen
 
-  if (isLoggedIn) {
-  Promise.all([Api.getUserInfo(), Api.getInitialCards()])
-    .then(([userData, cards]) => {
-      setCurrentUser(userData)
-      setCards(cards)
-    })
-    .catch(err => {
-      console.log(err);
-    });
-  }
+  
+  useEffect(() => {
+    if (isLoggedIn) {
+      Promise.all([Api.getUserInfo(), Api.getInitialCards()])
+        .then(([userData, cards]) => {
+          setCurrentUser(userData);
+          setCards(cards);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [isLoggedIn]);  
 
   useEffect(() => {
     handleTokenCheck();
