@@ -27,7 +27,7 @@ function App() {
   const [selectedCard, setSelectedCard] = useState({})
   const [currentUser, setCurrentUser] = useState({})
   const [cards, setCards] = useState([])
-  const [isStatus, setIsStatus] = useState(true)
+  const [isStatus, setIsStatus] = useState(false)
   const [isRegisterStatus, setIsRegisterStatus] = useState(true)
   const [userEmail, setUserEmail] = useState("")
 
